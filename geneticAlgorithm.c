@@ -107,8 +107,6 @@ void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 	unsigned long totalFit;
 	for (unsigned int g = 0; g < gCount; g++){
 		totalFit = computeFitness(pop, fitness, getFitness, iCount);
-		printf("Generation %u average fitness is %u\n", g,
-			(unsigned int) ((double) totalFit / iCount));
 		int tmp = mostFit(fitness, iCount);
 		if (fitness[tmp] > bestFit){
 			bestFit = fitness[tmp];
@@ -117,7 +115,15 @@ void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 			}
 			bestIndv = clone(pop[tmp]);
 		}
-
+		printf("Generation %03u: avg is %010u, best is %010u; "
+			"overall best: %010u", g,
+			(unsigned int) ((double) totalFit / iCount),
+			fitness[tmp], bestFit);
+		if (bestFit == fitness[tmp]){
+			puts("^");
+		}else{
+			puts("");
+		}
 		if (b != NULL && breedRatio != 0){
 			breed(pop, fitness, iCount, totalFit, breedRatio, b,
 				clone);
