@@ -35,7 +35,8 @@ static int getRandomWeighted(unsigned int *fitness, int iCount,
 }
 
 static void breed(void **pop, unsigned int *fitness, int iCount,
-		unsigned long totalFit, double breedRatio, breeder b, cloner c){
+		unsigned long totalFit, double breedRatio, breeder b,
+		cloner clone){
 	int breedCount = (int) (iCount * breedRatio + 1);
 	void **popWorking = malloc(sizeof(void*) * iCount);
 
@@ -44,14 +45,14 @@ static void breed(void **pop, unsigned int *fitness, int iCount,
 		int p1, p2;
 		p1 = getRandomWeighted(fitness, iCount, totalFit);
 		p2 = getRandomWeighted(fitness, iCount, totalFit);
-		popWorking[x] = c(pop[p1]);
-		popWorking[x+1] = c(pop[p2]);
+		popWorking[x] = clone(pop[p1]);
+		popWorking[x+1] = clone(pop[p2]);
 		b(popWorking[x], popWorking[x+1]);
 	}
 
 	for (/*x ~= breedCount*/; x < iCount; x++){
 		int i = getRandomWeighted(fitness, iCount, totalFit);
-		popWorking[x] = c(pop[i]);
+		popWorking[x] = clone(pop[i]);
 	}
 
 	for (int x = 0; x < iCount; x++){
@@ -90,7 +91,7 @@ static inline unsigned int mostFit(unsigned int *fitness, unsigned int iCount){
 
 void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 		getIndividual newRand, processInd getFitness, breeder b,
-		cloner c, double breedRatio, mutator m, double mutateRatio){
+		cloner clone, double breedRatio, mutator m, double mutateRatio){
 	//ensure that total fitness will never overflow
 	//apparently gcc thinks it's impossible though
 	//assert(UINT_MAX * iCount < ULONG_MAX);
@@ -116,11 +117,12 @@ void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 			if (bestIndv != NULL){
 				free(bestIndv);
 			}
-			bestIndv = c(pop[tmp]);
+			bestIndv = clone(pop[tmp]);
 		}
 
 		if (b != NULL && breedRatio != 0){
-			breed(pop, fitness, iCount, totalFit, breedRatio, b, c);
+			breed(pop, fitness, iCount, totalFit, breedRatio, b,
+				clone);
 		}
 		if (m != NULL && mutateRatio != 0){
 			mutate(m, mutateRatio);
