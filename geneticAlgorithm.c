@@ -127,5 +127,10 @@ void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 		}
 	}
 
+	free(fitness);
+	for(unsigned int x = 0; x<iCount; x++){
+		free(pop[x]);
+	}
+	free(pop);
 	return bestIndv;
 }
