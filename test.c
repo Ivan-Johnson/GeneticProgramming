@@ -49,9 +49,12 @@ int main (int argc, char **argv){
 	(void) argv;
 	srand(time(NULL));
 
-	char *str = (char*) geneticAlgorithm(100, 100, randStr, getFitness,
-					breedStr, cloneStr, 0.5,
-					mutateString, 0.05);
+	geneticParams p = geneticParamsDefault();
+	p.popSize = 4000;
+	p.genCount = 1000;
+	char *str = geneticAlgorithm(p, randStr, getFitness, cloneStr,
+				mutateString, breedStr);
+
 	free(str);
 	return 0;
 }

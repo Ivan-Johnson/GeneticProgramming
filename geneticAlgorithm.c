@@ -6,12 +6,14 @@
 #include "geneticAlgorithm.h"
 #include "helper.h"
 
+extern geneticParams geneticParamsDefault();
+
 static const double SKEW_FACTOR = 0.1;
 
-static int getRandomWeighted(unsigned int *fitness, int iCount,
+static int getRandomWeighted(unsigned int *fitness, int popSize,
 			unsigned long totalFit){
 	unsigned long randomFit;
-	if ((unsigned long) iCount < (unsigned long) (SKEW_FACTOR * ULONG_MAX)){
+	if ((unsigned long) popSize < (unsigned long) (SKEW_FACTOR * ULONG_MAX)){
 		randomFit = randl() % totalFit;
 	} else {
 		do {
@@ -22,7 +24,7 @@ static int getRandomWeighted(unsigned int *fitness, int iCount,
 	int i = 0;
 
 	while (randomFit >= fitness[i]){
-		assert(i < iCount);
+		assert(i < popSize);
 		randomFit -= fitness[i];
 		i++;
 	}
@@ -30,7 +32,7 @@ static int getRandomWeighted(unsigned int *fitness, int iCount,
 	return i;
 }
 
-static void reproduce(void **pop, int iCount, cloner clone,
+static void reproduce(void **pop, int popSize, cloner clone,
 		unsigned int *fitness, unsigned long totalFit,
 		breeder breed, double breedRatio,
 		mutator mutate, double mutateRatio){
@@ -40,22 +42,22 @@ static void reproduce(void **pop, int iCount, cloner clone,
 	if (mutate == NULL){
 		mutateRatio = 0;
 	}
-	int breedCount = (int) (iCount * breedRatio);
-	int mutateCount = (int) (iCount * mutateRatio);
-	assert(breedCount + mutateCount <= iCount);
+	int breedCount = (int) (popSize * breedRatio);
+	int mutateCount = (int) (popSize * mutateRatio);
+	assert(breedCount + mutateCount <= popSize);
 
-	void **popWorking = malloc(sizeof(void*) * iCount);
+	void **popWorking = malloc(sizeof(void*) * popSize);
 
 	//create the next generation
-	for (int x = 0; x < iCount; x++){
-		int i = getRandomWeighted(fitness, iCount, totalFit);
+	for (int x = 0; x < popSize; x++){
+		int i = getRandomWeighted(fitness, popSize, totalFit);
 		popWorking[x] = clone(pop[i]);
 	}
 
 	//breed the next generation
 	if (breedCount % 2){//breed the odd child, if any
 		breedCount--;
-		unsigned tmpI = getRandomWeighted(fitness, iCount, totalFit);
+		unsigned tmpI = getRandomWeighted(fitness, popSize, totalFit);
 		void *tmp = clone(pop[tmpI]);
 		breed(tmp, popWorking[breedCount]);
 		free(tmp);
@@ -70,7 +72,7 @@ static void reproduce(void **pop, int iCount, cloner clone,
 	}
 
 	//cleanup
-	for (int x = 0; x < iCount; x++){
+	for (int x = 0; x < popSize; x++){
 		free(pop[x]);
 		pop[x] = popWorking[x];
 	}
@@ -78,9 +80,9 @@ static void reproduce(void **pop, int iCount, cloner clone,
 }
 
 static unsigned long computeFitness(void **pop, unsigned int *fitness,
-				processInd getFitness, unsigned int iCount){
+				processIndv getFitness, unsigned int popSize){
 	unsigned long totalFit = 0;
-	for (unsigned int x = 0; x < iCount; x++){
+	for (unsigned int x = 0; x < popSize; x++){
 		fitness[x] = getFitness(pop[x]);
 		totalFit += fitness[x];
 	}
@@ -88,9 +90,9 @@ static unsigned long computeFitness(void **pop, unsigned int *fitness,
 	return totalFit;
 }
 
-static inline unsigned int mostFit(unsigned int *fitness, unsigned int iCount){
+static inline unsigned int mostFit(unsigned int *fitness, unsigned int popSize){
 	unsigned int fit = 0;
-	for (unsigned int x = 1; x < iCount; x++){
+	for (unsigned int x = 1; x < popSize; x++){
 		if (fitness[x] > fitness[fit]){
 			fit = x;
 		}
@@ -98,27 +100,25 @@ static inline unsigned int mostFit(unsigned int *fitness, unsigned int iCount){
 	return fit;
 }
 
+void* geneticAlgorithm(geneticParams p, getIndv newRand,
+		processIndv getFitness, cloner clone, mutator mutate,
+		breeder breed){
+	assert(UINT_MAX < ULONG_MAX / p.popSize + 1);
 
-void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
-		getIndividual newRand, processInd getFitness, breeder breed,
-		cloner clone, double breedRatio,
-		mutator mutate, double mutateRatio){
-	assert(UINT_MAX < ULONG_MAX / iCount + 1);
-
-	void **pop = malloc(sizeof(void*) * iCount);
-	unsigned int *fitness = malloc(sizeof(int) * iCount);
+	void **pop = malloc(sizeof(void*) * p.popSize);
+	unsigned int *fitness = malloc(sizeof(int) * p.popSize);
 
 	void *bestIndv = NULL;
 	unsigned int bestFit = 0;
 
-	for (unsigned int x = 0; x < iCount; x++){
+	for (unsigned int x = 0; x < p.popSize; x++){
 		pop[x] = newRand();
 	}
 
 	unsigned long totalFit;
-	for (unsigned int g = 0; g < gCount; g++){
-		totalFit = computeFitness(pop, fitness, getFitness, iCount);
-		int tmp = mostFit(fitness, iCount);
+	for (unsigned int g = 0; g < p.genCount; g++){
+		totalFit = computeFitness(pop, fitness, getFitness, p.popSize);
+		int tmp = mostFit(fitness, p.popSize);
 		if (fitness[tmp] > bestFit){
 			bestFit = fitness[tmp];
 			if (bestIndv != NULL){
@@ -128,7 +128,7 @@ void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 		}
 		printf("Generation %03u: avg is %010u, best is %010u; "
 			"overall best: %010u", g,
-			(unsigned int) ((double) totalFit / iCount),
+			(unsigned int) ((double) totalFit / p.popSize),
 			fitness[tmp], bestFit);
 		if (bestFit == fitness[tmp]){
 			puts("^");
@@ -136,12 +136,12 @@ void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 			puts("");
 		}
 
-		reproduce(pop, iCount, clone, fitness, totalFit,
-			breed, breedRatio, mutate, mutateRatio);
+		reproduce(pop, p.popSize, clone, fitness, totalFit,
+			breed, p.breedRatio, mutate, p.mutateRatio);
 	}
 
 	free(fitness);
-	for(unsigned int x = 0; x<iCount; x++){
+	for(unsigned int x = 0; x<p.popSize; x++){
 		free(pop[x]);
 	}
 	free(pop);
