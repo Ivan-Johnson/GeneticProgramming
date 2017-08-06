@@ -9,10 +9,14 @@
 
 static const int strLen = 9;
 
+static inline char randDigit(){
+	return '0' + rand() % 10;
+}
+
 void* randStr(){
 	char *str = malloc(sizeof(char) * (strLen + 1));
 	for (int x = 0; x<strLen; x++){
-		str[x] = '0' + rand() % 10;
+		str[x] = randDigit();
 	}
 	str[strLen] = '\0';
 	return str;
@@ -36,13 +40,18 @@ void* cloneStr(void *s1){
 	return s2;
 }
 
+void mutateString(void *str){
+	((char*)str)[rand() % strLen] = randDigit();
+}
+
 int main (int argc, char **argv){
 	(void) argc;
 	(void) argv;
 	srand(time(NULL));
 
-	char *str = (char*) geneticAlgorithm(1000, 20, randStr, getFitness,
-					breedStr, cloneStr, 0.75, NULL, 0);
+	char *str = (char*) geneticAlgorithm(100, 100, randStr, getFitness,
+					breedStr, cloneStr, 0.5,
+					mutateString, 0.05);
 	free(str);
 	return 0;
 }

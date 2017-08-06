@@ -20,11 +20,7 @@ static int getRandomWeighted(unsigned int *fitness, int iCount,
 	}
 
 	int i = 0;
-	/* //does not work because randomFit is unsigned
-	do {
-		randomFit -= fitness[i++];
-	} while (randomFit >= 0);
-	*/
+
 	while (randomFit >= fitness[i]){
 		assert(i < iCount);
 		randomFit -= fitness[i];
@@ -34,37 +30,51 @@ static int getRandomWeighted(unsigned int *fitness, int iCount,
 	return i;
 }
 
-static void breed(void **pop, unsigned int *fitness, int iCount,
-		unsigned long totalFit, double breedRatio, breeder b,
-		cloner clone){
-	int breedCount = (int) (iCount * breedRatio + 1);
+static void reproduce(void **pop, int iCount, cloner clone,
+		unsigned int *fitness, unsigned long totalFit,
+		breeder breed, double breedRatio,
+		mutator mutate, double mutateRatio){
+	if (breed == NULL){
+		breedRatio = 0;
+	}
+	if (mutate == NULL){
+		mutateRatio = 0;
+	}
+	int breedCount = (int) (iCount * breedRatio);
+	int mutateCount = (int) (iCount * mutateRatio);
+	assert(breedCount + mutateCount <= iCount);
+
 	void **popWorking = malloc(sizeof(void*) * iCount);
 
-	int x;
-	for (x = 0; x < breedCount; x += 2){
-		int p1, p2;
-		p1 = getRandomWeighted(fitness, iCount, totalFit);
-		p2 = getRandomWeighted(fitness, iCount, totalFit);
-		popWorking[x] = clone(pop[p1]);
-		popWorking[x+1] = clone(pop[p2]);
-		b(popWorking[x], popWorking[x+1]);
-	}
-
-	for (/*x ~= breedCount*/; x < iCount; x++){
+	//create the next generation
+	for (int x = 0; x < iCount; x++){
 		int i = getRandomWeighted(fitness, iCount, totalFit);
 		popWorking[x] = clone(pop[i]);
 	}
 
+	//breed the next generation
+	if (breedCount % 2){//breed the odd child, if any
+		breedCount--;
+		unsigned tmpI = getRandomWeighted(fitness, iCount, totalFit);
+		void *tmp = clone(pop[tmpI]);
+		breed(tmp, popWorking[breedCount]);
+		free(tmp);
+	}
+	for (int x = 0; x < breedCount; x += 2){
+		breed(popWorking[x], popWorking[x+1]);
+	}
+
+	mutateCount += breedCount;
+	for (int x = breedCount; x < mutateCount; x++){
+		mutate(popWorking[x]);
+	}
+
+	//cleanup
 	for (int x = 0; x < iCount; x++){
 		free(pop[x]);
 		pop[x] = popWorking[x];
 	}
 	free(popWorking);
-}
-
-static void mutate(mutator m, double mutateRatio){
-	(void) m;
-	(void) mutateRatio;
 }
 
 static unsigned long computeFitness(void **pop, unsigned int *fitness,
@@ -90,8 +100,9 @@ static inline unsigned int mostFit(unsigned int *fitness, unsigned int iCount){
 
 
 void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
-		getIndividual newRand, processInd getFitness, breeder b,
-		cloner clone, double breedRatio, mutator m, double mutateRatio){
+		getIndividual newRand, processInd getFitness, breeder breed,
+		cloner clone, double breedRatio,
+		mutator mutate, double mutateRatio){
 	assert(UINT_MAX < ULONG_MAX / iCount + 1);
 
 	void **pop = malloc(sizeof(void*) * iCount);
@@ -124,13 +135,9 @@ void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 		}else{
 			puts("");
 		}
-		if (b != NULL && breedRatio != 0){
-			breed(pop, fitness, iCount, totalFit, breedRatio, b,
-				clone);
-		}
-		if (m != NULL && mutateRatio != 0){
-			mutate(m, mutateRatio);
-		}
+
+		reproduce(pop, iCount, clone, fitness, totalFit,
+			breed, breedRatio, mutate, mutateRatio);
 	}
 
 	free(fitness);

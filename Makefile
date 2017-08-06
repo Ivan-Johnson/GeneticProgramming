@@ -10,15 +10,17 @@ OPTS_OPTIMIZED = -O3
 CFLAGS += $(OPTS_DEBUG)
 #CFLAGS += $(OPTS_OPTIMIZED)
 
-all: main
+all: test
 
 geneticAlgorithm.o: geneticAlgorithm.c geneticAlgorithm.h helper.h
 
-main.o: main.c geneticAlgorithm.h
+geneticAlgorithm.o: helper.h
 
-main: main.o geneticAlgorithm.o helper.o
+test.o: geneticAlgorithm.h helper.h
+
+test: test.o geneticAlgorithm.o helper.o
 
 clean:
-	rm -f *.o main
+	rm -f *.o test
 
-.PHONY: all clean
+.PHONY: all clean all_exe
