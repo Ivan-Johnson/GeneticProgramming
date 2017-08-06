@@ -92,9 +92,7 @@ static inline unsigned int mostFit(unsigned int *fitness, unsigned int iCount){
 void* geneticAlgorithm(unsigned int iCount, unsigned int gCount,
 		getIndividual newRand, processInd getFitness, breeder b,
 		cloner clone, double breedRatio, mutator m, double mutateRatio){
-	//ensure that total fitness will never overflow
-	//apparently gcc thinks it's impossible though
-	//assert(UINT_MAX * iCount < ULONG_MAX);
+	assert(UINT_MAX < ULONG_MAX / iCount + 1);
 
 	void **pop = malloc(sizeof(void*) * iCount);
 	unsigned int *fitness = malloc(sizeof(int) * iCount);
