@@ -9,9 +9,13 @@ CFLAGS += $(OPTS_DEBUG)
 all: main
 
 main.exe:
-	x86_64-w64-mingw32-gcc -o main.exe main.c geneticAlgorithm.c
+	x86_64-w64-mingw32-gcc -o main.exe main.c geneticAlgorithm.c helper.c
 
-main: main.o geneticAlgorithm.o
+geneticAlgorithm.o: geneticAlgorithm.c geneticAlgorithm.h helper.h
+
+main.o: main.c geneticAlgorithm.h
+
+main: main.o geneticAlgorithm.o helper.o
 
 clean:
 	rm -f *.o main main.exe
