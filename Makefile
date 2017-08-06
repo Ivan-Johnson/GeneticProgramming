@@ -5,6 +5,7 @@ OPTS_DEBUG = -O0 -ggdb -fno-inline
 OPTS_OPTIMIZED = -O3
 
 CFLAGS += $(OPTS_DEBUG)
+#CFLAGS += $(OPTS_OPTIMIZED)
 
 all: main
 

@@ -42,6 +42,9 @@ unsigned long randl(){
 
 	long l;
 	int r;
+
+	//unnecessary initialization. Only here to supress compiler warnings.
+	l = 0;
 	for (int x = 0; x < runCount; x++){
 		l = l << RAND_WIDTH;
 		r = rand() & 0x7FFF; //hopefully evenly distributed
