@@ -124,6 +124,7 @@ void* geneticAlgorithm(geneticParams p, getIndv newRand,
 			}
 			bestIndv = clone(pop[tmp]);
 		}
+#ifdef DEBUG
 		printf("Generation %03u: avg is %010u, best is %010u; "
 			"overall best: %010u", g,
 			(unsigned int) ((double) totalFit / p.popSize),
@@ -133,6 +134,7 @@ void* geneticAlgorithm(geneticParams p, getIndv newRand,
 		}else{
 			puts("");
 		}
+#endif
 
 		reproduce(pop, p.popSize, clone, fitness, totalFit,
 			breed, p.breedRatio, mutate, p.mutateRatio);

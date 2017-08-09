@@ -59,6 +59,7 @@ void mutateString(void *str){
 int main (int argc, char **argv){
 	(void) argc;
 	(void) argv;
+
 	srand(time(NULL));
 
 	geneticParams p = geneticParamsDefault();
@@ -68,7 +69,7 @@ int main (int argc, char **argv){
 	overflowCheck(p.popSize);
 	char *str = geneticAlgorithm(p, randStr, getFitness, cloneStr,
 				mutateString, breedStr);
-
+	printf("The best string found was \"%s\"\n", str);
 	free(str);
 	return 0;
 }

@@ -6,7 +6,7 @@ LDLIBS = -lm
 
 
 
-OPTS_DEBUG = -O0 -ggdb -fno-inline
+OPTS_DEBUG = -D DEBUG -O0 -ggdb -fno-inline
 OPTS_OPTIMIZED = -O3
 
 CFLAGS += $(OPTS_DEBUG)
