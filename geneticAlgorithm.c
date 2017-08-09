@@ -85,11 +85,24 @@ static void reproduce(void **pop, unsigned int popSize, cloner clone,
 	free(popWorking);
 }
 
+static inline void overflowCheck(unsigned long foo, unsigned int bar){
+#ifdef DEBUG
+	if (ULONG_MAX - foo < bar){
+		puts("ERROR: long int overflow occured!");
+		exit (EXIT_FAILURE);
+	}
+#else
+	(void) foo;
+	(void) bar;
+#endif
+}
+
 static unsigned long computeFitness(void **pop, unsigned int *fitness,
 				processIndv getFitness, unsigned int popSize){
 	unsigned long totalFit = 0;
 	for (unsigned int x = 0; x < popSize; x++){
 		fitness[x] = getFitness(pop[x]);
+		overflowCheck(totalFit, fitness[x]);
 		totalFit += fitness[x];
 	}
 
