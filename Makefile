@@ -2,13 +2,17 @@
 #CC = x86_64-w64-mingw32-gcc
 
 CFLAGS += -Wall -Wextra -Wfatal-errors -Werror -std=c99
-#-lm
+LDLIBS = -lm
+
+
 
 OPTS_DEBUG = -O0 -ggdb -fno-inline
 OPTS_OPTIMIZED = -O3
 
 CFLAGS += $(OPTS_DEBUG)
 #CFLAGS += $(OPTS_OPTIMIZED)
+
+
 
 all: test
 

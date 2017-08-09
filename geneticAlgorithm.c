@@ -103,8 +103,6 @@ static inline unsigned int mostFit(unsigned int *fitness, unsigned int popSize){
 void* geneticAlgorithm(geneticParams p, getIndv newRand,
 		processIndv getFitness, cloner clone, mutator mutate,
 		breeder breed){
-	assert(UINT_MAX < ULONG_MAX / p.popSize + 1);
-
 	void **pop = malloc(sizeof(void*) * p.popSize);
 	unsigned int *fitness = malloc(sizeof(int) * p.popSize);
 

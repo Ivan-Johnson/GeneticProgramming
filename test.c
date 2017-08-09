@@ -3,14 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
 
 #include "helper.h"
 #include "geneticAlgorithm.h"
 
+//len of 10 or higher will overflow a 32 bit integer. However, Window's longs
+//are also 32 bit, so it would be wise to set the max to 9 - log10(popSize)
 static const int strLen = 9;
 
 static inline char randDigit(){
 	return '0' + rand() % 10;
+}
+
+static inline void overflowCheck(unsigned int popSize){
+	if (strLen + log(popSize)/log(10) > log(ULONG_MAX) / log(10)){
+		printf("ERROR: you machine's longs are not long enough to "
+			"perform this test. Please decrease the value of "
+			"strLen and recompile to proceed\n");
+		exit (EXIT_FAILURE);
+	}
 }
 
 void* randStr(){
@@ -52,6 +64,8 @@ int main (int argc, char **argv){
 	geneticParams p = geneticParamsDefault();
 	p.popSize = 4000;
 	p.genCount = 1000;
+
+	overflowCheck(p.popSize);
 	char *str = geneticAlgorithm(p, randStr, getFitness, cloneStr,
 				mutateString, breedStr);
 
