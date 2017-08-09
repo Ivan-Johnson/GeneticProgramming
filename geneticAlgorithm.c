@@ -10,23 +10,27 @@ extern geneticParams geneticParamsDefault();
 
 static const double SKEW_FACTOR = 0.1;
 
-static int getRandomWeighted(unsigned int *fitness, int popSize,
-			unsigned long totalFit){
+static unsigned int getRandomWeighted(unsigned int *fitness,
+				unsigned int popSize, unsigned long totalFit){
 	unsigned long randomFit;
-	if ((unsigned long) popSize < (unsigned long) (SKEW_FACTOR * ULONG_MAX)){
-		randomFit = randl() % totalFit;
+	unsigned int i;
+	if (totalFit == 0) {//to avoid % by zero errors
+		i = (int) (randl() % popSize);
 	} else {
-		do {
-			randomFit = randl();
-		} while (randomFit >= totalFit);
-	}
+		if ((unsigned long) popSize < (unsigned long) (SKEW_FACTOR * ULONG_MAX)){
+			randomFit = randl() % totalFit;
+		} else {
+			do {
+				randomFit = randl();
+			} while (randomFit >= totalFit);
+		}
 
-	int i = 0;
-
-	while (randomFit >= fitness[i]){
-		assert(i < popSize);
-		randomFit -= fitness[i];
-		i++;
+		i=0;
+		while (randomFit >= fitness[i]){
+			assert(i < popSize);
+			randomFit -= fitness[i];
+			i++;
+		}
 	}
 
 	return i;
