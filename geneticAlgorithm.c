@@ -32,11 +32,10 @@ static unsigned int getRandomWeighted(unsigned int *fitness,
 			i++;
 		}
 	}
-
 	return i;
 }
 
-static void reproduce(void **pop, int popSize, cloner clone,
+static void reproduce(void **pop, unsigned int popSize, cloner clone,
 		unsigned int *fitness, unsigned long totalFit,
 		breeder breed, double breedRatio,
 		mutator mutate, double mutateRatio){
@@ -46,14 +45,18 @@ static void reproduce(void **pop, int popSize, cloner clone,
 	if (mutate == NULL){
 		mutateRatio = 0;
 	}
-	int breedCount = (int) (popSize * breedRatio);
-	int mutateCount = (int) (popSize * mutateRatio);
-	assert(breedCount + mutateCount <= popSize);
+	unsigned int breedCount = (unsigned int) (popSize * breedRatio);
+	unsigned int mutateCount = (unsigned int) (popSize * mutateRatio);
+
+	//addition might cause an overflow
+	//assert(breedCount + mutateCount <= popSize);
+	assert(popSize >= breedCount);
+	assert(popSize - breedCount >= mutateCount);
 
 	void **popWorking = malloc(sizeof(void*) * popSize);
 
 	//create the next generation
-	for (int x = 0; x < popSize; x++){
+	for (unsigned int x = 0; x < popSize; x++){
 		int i = getRandomWeighted(fitness, popSize, totalFit);
 		popWorking[x] = clone(pop[i]);
 	}
@@ -66,17 +69,16 @@ static void reproduce(void **pop, int popSize, cloner clone,
 		breed(tmp, popWorking[breedCount]);
 		free(tmp);
 	}
-	for (int x = 0; x < breedCount; x += 2){
+	for (unsigned int x = 0; x < breedCount; x += 2){
 		breed(popWorking[x], popWorking[x+1]);
 	}
 
 	mutateCount += breedCount;
-	for (int x = breedCount; x < mutateCount; x++){
+	for (unsigned int x = breedCount; x < mutateCount; x++){
 		mutate(popWorking[x]);
 	}
 
-	//cleanup
-	for (int x = 0; x < popSize; x++){
+	for (unsigned int x = 0; x < popSize; x++){
 		free(pop[x]);
 		pop[x] = popWorking[x];
 	}
