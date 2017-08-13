@@ -24,6 +24,8 @@ test.o: geneticAlgorithm.h helper.h
 
 test: test.o geneticAlgorithm.o helper.o
 
+world.o: world.h ant.h
+
 clean:
 	rm -f *.o test
 
