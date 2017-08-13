@@ -1,3 +1,6 @@
+#to cross-compile for windows, uncomment. Executables must be renamed to .exe
+#CC = x86_64-w64-mingw32-gcc
+
 CFLAGS += -Wall -Wextra -Wfatal-errors -Werror -std=c99
 #-lm
 
@@ -9,9 +12,6 @@ CFLAGS += $(OPTS_DEBUG)
 
 all: main
 
-main.exe: geneticAlgorithm.c helper.c main.c
-	x86_64-w64-mingw32-gcc $(CFLAGS) -o main.exe main.c geneticAlgorithm.c helper.c
-
 geneticAlgorithm.o: geneticAlgorithm.c geneticAlgorithm.h helper.h
 
 main.o: main.c geneticAlgorithm.h
@@ -19,6 +19,6 @@ main.o: main.c geneticAlgorithm.h
 main: main.o geneticAlgorithm.o helper.o
 
 clean:
-	rm -f *.o main main.exe
+	rm -f *.o main
 
 .PHONY: all clean
