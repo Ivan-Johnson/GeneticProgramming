@@ -26,6 +26,8 @@ test: test.o geneticAlgorithm.o helper.o
 
 world.o: world.h ant.h
 
+MapGen/map.c: MapGen/map.txt MapGen/convertMap.bash
+	./MapGen/convertMap.bash $< > $@
 clean:
 	rm -f *.o test
 
