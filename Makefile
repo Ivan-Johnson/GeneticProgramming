@@ -16,9 +16,9 @@ CFLAGS += $(OPTS_DEBUG)
 
 all: test
 
-geneticAlgorithm.o: geneticAlgorithm.c geneticAlgorithm.h helper.h
+ant.o: ant.h
 
-geneticAlgorithm.o: helper.h
+geneticAlgorithm.o: geneticAlgorithm.h helper.h
 
 test.o: geneticAlgorithm.h helper.h
 
