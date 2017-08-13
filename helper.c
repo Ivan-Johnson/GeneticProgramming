@@ -50,6 +50,8 @@ unsigned long randl(){
 	l = l << remainder;
 	r = rand() & masks[remainder];
 	l = l | r;
+
+	free(masks);
 	return l;
 }
 
