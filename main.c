@@ -44,5 +44,6 @@ int main (int argc, char **argv){
 	char *str = (char*) geneticAlgorithm(1000, 20, randStr, getFitness,
 					breedStr, cloneStr, 0.75, NULL, 0);
 	printf("BEST: %s\n\n\n", str);
+	free(str);
 	return 0;
 }
