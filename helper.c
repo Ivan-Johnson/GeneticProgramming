@@ -4,8 +4,6 @@
 
 #include "helper.h"
 
-//RAND_MAX is at least RAND_MAX_MIN
-static const int RAND_MAX_MIN = 32767;
 //RAND_MAX_MIN is 2^15 - 1
 static const int RAND_WIDTH = 15;
 
