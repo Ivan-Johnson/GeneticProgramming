@@ -1,7 +1,23 @@
 #to cross-compile for windows, uncomment. Executables must be renamed to .exe
 #CC = x86_64-w64-mingw32-gcc
 
-CFLAGS += -Wall -Wextra -Wfatal-errors -Werror -std=c99
+
+CFLAGS += -Wfatal-errors -std=c99
+
+#Controls how strict the compiler is. Zero is the most strict, larger values are
+#more lenient
+STRICT ?= 0
+
+ifeq ($(shell test $(STRICT) -le 1; echo $$?),0)
+	CFLAGS += -Werror
+endif
+
+ifeq ($(shell test $(STRICT) -eq 0; echo $$?),0)
+	CFLAGS += -Wall -Wextra
+endif
+
+
+
 LDLIBS = -lm
 
 OPTS_DEBUG = -D DEBUG -O0 -ggdb -fno-inline
