@@ -6,8 +6,9 @@ demonstration of the genetic algorithm; individuals are strings of numeric
 characters whose fitness is simply the value of the number they represent. The
 executable "main-Ant" finds solutions to the artificial ant problem (as
 described by John R. Koza in "Genetic Programming"), in which finite state
-machines ("ants") are tasked with following a partially obfuscated trail of
-"food" in a particular map (defined by MapGen/map.txt), such as this one:
+machines ("ants") are tasked with following a trail of "breadcrumbs" while only
+being able to detect the state of the tile directly in front of them. Here is an
+example world:
 
      -----------------------------------------
     |                 X X                     |
@@ -32,14 +33,16 @@ machines ("ants") are tasked with following a partially obfuscated trail of
     | X X   X     X       X X X X X X X X X X |
      -----------------------------------------
 
-A visualization of an ant following the crumbs can be seen in [this YouTube
+A well trained ant can be seen successfully exploring this map in [this YouTube
 video](https://youtu.be/cAMlH9y2bdk)
 
-The only information that the ant receives is whether or not the tile directly
-in front of it contains food. Based on its current state and its input, the ant
-changes its state and takes an action (either turning nintey degrees in one
-direction, or advancing a single tile and consuming the food there, if there is
-any).
+The finite state machines controlling each ant is stored as a 2D array, indexed
+by the ant's current state and whether or not there is a breadcrumb in the tile
+directly in front of it. The values in a given cell determine what action the
+ant should take and what state it should change to.
+
+Two ants can produce two offspring by selecting a random contiguous region of
+the matrix and swapping those values between the two ants.
 
 ## Setup
 
