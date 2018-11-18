@@ -1,3 +1,4 @@
 **/*.o
 test
 main-Ant
+MapGen/map.c
