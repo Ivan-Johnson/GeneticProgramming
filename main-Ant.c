@@ -105,10 +105,8 @@ int main (int argc, char **argv){
 	Ant *a = geneticAlgorithm(p, randAnt, getFitness, cloneAnt,
 				mutateAnt, breedAnt);
 
-	//WorldRun(w, a, stdout);
-	WorldRun(w, a, NULL);
-	//TODO: display ant, somehow
+	int fitness = (signed) WorldRun(w, a, stdout);
+	printf("Found %d of %d cells\n", fitness, count);
 	free(a);
-	//*/
 	return 0;
 }

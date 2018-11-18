@@ -144,20 +144,24 @@ void* geneticAlgorithm(geneticParams p, getIndv newRand,
 			bestIndv = clone(pop[tmp]);
 		}
 #ifdef DEBUG
-		printf("Generation %03u: avg is %010u, best is %010u; "
-			"overall best: %010u", g,
-			(unsigned int) ((double) totalFit / p.popSize),
-			fitness[tmp], bestFit);
+		static char *bestStr;
 		if (bestFit == fitness[tmp]){
-			puts("^");
-		}else{
-			puts("");
+			bestStr = "^";
+		} else {
+			bestStr = "";
 		}
+		printf("Generation %03u/%d: avg is %010u, best is %010u; "
+			"overall best: %010u%s\r", g+1, p.genCount,
+			(unsigned int) ((double) totalFit / p.popSize),
+			fitness[tmp], bestFit, bestStr);
 #endif
 
 		reproduce(pop, p.popSize, clone, fitness, totalFit,
 			breed, p.breedRatio, mutate, p.mutateRatio);
 	}
+#ifdef DEBUG
+	printf("\n");
+#endif
 
 	free(fitness);
 	for(unsigned int x = 0; x<p.popSize; x++){

@@ -71,9 +71,7 @@ unsigned int WorldRun(World w, Ant *a, FILE *f){
 	unsigned int numEaten = 0;
 	int c = 0;
 	while (c++ < MAX_STEP && !isDead(w.x, w.y)) {
-		if (f){
-			WorldPrint(&w, a, f);
-		}
+		WorldPrint(&w, a, f);
 		AntActs aa = AntAct(a, isFacingFood(&w) ? food : nothing);
 		switch (aa) {
 		case turnLeft:
@@ -94,13 +92,14 @@ unsigned int WorldRun(World w, Ant *a, FILE *f){
 			exit (EXIT_FAILURE);
 		}
 	}
-	if (f) {
-		WorldPrint(&w, a, f);
-	}
+	WorldPrint(&w, a, f);
 	return numEaten;
 }
 
 void WorldPrint(World *w, Ant *a, FILE *f){
+	if (!f) {
+		return;
+	}
 	printf("x: %i, y: %i, face: %i, state: %i\n", w->x, w->y, w->facing,
 		a->state);
 	fprintf(f, " ");
