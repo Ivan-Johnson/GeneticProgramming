@@ -95,10 +95,10 @@ int main (int argc, char **argv){
 	//srand(0);
 
 	geneticParams p = geneticParamsDefault();
-	p.popSize = 32000;
-	p.genCount = 20;
-	//p.breedRatio = 0.5;
-	//p.mutateRatio = 0;
+	p.popSize = 2000;
+	p.genCount = 300;
+	p.breedRatio = 0.5;
+	p.mutateRatio = 0.1;
 
 	Ant *a = geneticAlgorithm(p, randAnt, getFitness, cloneAnt,
 				mutateAnt, breedAnt);
