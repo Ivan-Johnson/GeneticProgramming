@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "ant.h"
@@ -124,4 +125,20 @@ void WorldPrint(World *w, Ant *a, FILE *f){
 		fprintf(f, "__");
 	}
 	fprintf(f, "_|\n");
+}
+
+int WorldCountFood(World w)
+{
+	int tot = 0;
+	for (int a = 0; a < WORLD_WIDTH; a++) {
+		for (int b = 0; b < WORLD_WIDTH; b++) {
+			if (w.hasFood[a][b]) {
+				if (tot == INT_MAX) {
+					return -1;
+				}
+				tot++;
+			}
+		}
+	}
+	return tot;
 }

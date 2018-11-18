@@ -24,4 +24,14 @@ typedef struct World World;
 
 unsigned int WorldRun(World, Ant *, FILE *f);
 void WorldPrint(World *w, Ant *a, FILE *f);
+
+/*
+ * When successful, returns the number of cells that contain food.
+ *
+ * Returns a negative value on failure. Example causes of failure:
+ * 1: the given world was not initialized correctly
+ * 2: the number of food items in the given world cannot be represented by an integer
+ */
+int WorldCountFood(World w);
+
 #endif

@@ -89,8 +89,10 @@ int main (int argc, char **argv){
 	(void) argv;
 
 	initTheWorld();
+	int count = WorldCountFood(w);
+	printf("Finite state machines are breed based on the number of pieces of \"food\" that\n"
+		"they find. The maximal value for this world is %d.\n", count);
 
-	//*
 	srand(time(NULL));
 	//srand(0);
 
