@@ -7,10 +7,10 @@ characters whose fitness is simply the value of the number they represent. The
 executable "main-Ant" finds solutions to the artificial ant problem (as
 described by John R. Koza in "Genetic Programming"), in which finite state
 machines ("ants") are tasked with following a partially obfuscated trail of
-"food", such as this one:
+"food" in a particular map (defined by MapGen/map.txt), such as this one:
 
      -----------------------------------------
-    | V               X X                     |
+    |                 X X                     |
     | X             X         X       X       |
     | X                       X             X |
     | X X X X                               X |
@@ -34,8 +34,9 @@ machines ("ants") are tasked with following a partially obfuscated trail of
 
 The only information that the ant receives is whether or not the tile directly
 in front of it contains food. Based on its current state and its input, the ant
-decides whether it should turn left, right, or advance one tile (consuming the
-food that is there, if any).
+changes its state and takes an action (either turning nintey degrees in one
+direction, or advancing a single tile and consuming the food there, if there is
+any).
 
 ## Setup
 
