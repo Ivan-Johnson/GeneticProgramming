@@ -32,6 +32,9 @@ machines ("ants") are tasked with following a partially obfuscated trail of
     | X X   X     X       X X X X X X X X X X |
      -----------------------------------------
 
+A visualization of an ant following the crumbs can be seen in [this YouTube
+video](https://youtu.be/cAMlH9y2bdk)
+
 The only information that the ant receives is whether or not the tile directly
 in front of it contains food. Based on its current state and its input, the ant
 changes its state and takes an action (either turning nintey degrees in one
